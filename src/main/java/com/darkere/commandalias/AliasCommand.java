@@ -1,7 +1,6 @@
 package com.darkere.commandalias;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
@@ -11,6 +10,7 @@ import net.minecraft.util.text.StringTextComponent;
 public class AliasCommand {
     public static LiteralArgumentBuilder<CommandSource> register() {
         return LiteralArgumentBuilder.<CommandSource>literal("addAlias")
+            .requires(x -> x.hasPermissionLevel(4))
             .then(Commands.argument("alias", StringArgumentType.string())
                 .then(Commands.literal("->")
                     .then(Commands.argument("cmd", StringArgumentType.string())
