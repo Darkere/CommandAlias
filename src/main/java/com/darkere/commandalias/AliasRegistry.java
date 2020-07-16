@@ -2,6 +2,7 @@ package com.darkere.commandalias;
 
 import com.electronwill.nightconfig.core.utils.StringUtils;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.CommandSource;
@@ -11,10 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AliasRegistry {
     private static final Map<String, String> aliases = new HashMap<>();
@@ -23,10 +21,28 @@ public class AliasRegistry {
     public static int runAlias(CommandContext<CommandSource> context) {
         String input = context.getInput();
         String command = input.substring(input.indexOf(context.getNodes().get(0).getNode().getName()));
-        String commandToRun = aliases.get(command);
-        if (commandToRun == null) return 0;
+        String commandToRun = getCommandWithArguments(command);
         context.getSource().getServer().getCommandManager().handleCommand(context.getSource(), commandToRun);
         return 1;
+    }
+
+    private static String getCommandWithArguments(String command) {
+        List<String> nodes = StringUtils.split(command, ' ');
+        String test = "";
+        for (Iterator<String> iterator = nodes.iterator(); iterator.hasNext(); ) {
+            test = test + iterator.next();
+            iterator.remove();
+            if (aliases.containsKey(test)) {
+                break;
+            }
+        }
+
+        String com = aliases.get(test);
+        StringBuilder args = new StringBuilder();
+        for (String node : nodes) {
+            args.append(" ").append(node);
+        }
+        return com == null ? "" : com + args;
     }
 
     public static void registerAliases(CommandDispatcher<CommandSource> dispatcher) {
@@ -44,11 +60,11 @@ public class AliasRegistry {
 
             LiteralArgumentBuilder<CommandSource> literal = null;
             if (literals.size() == 1) {
-                literal = literals.get(0).executes(AliasRegistry::runAlias);
+                literal = literals.get(0).then(Commands.argument("args", StringArgumentType.greedyString()).executes(AliasRegistry::runAlias));
             } else {
                 for (int i = literals.size() - 1; i > 0; i--) {
                     if (i == literals.size() - 1) {
-                        literals.get(i).executes(AliasRegistry::runAlias);
+                        literals.get(i).then(Commands.argument("args", StringArgumentType.greedyString()).executes(AliasRegistry::runAlias));
                     }
                     literal = literals.get(i - 1).then(literals.get(i));
                 }
