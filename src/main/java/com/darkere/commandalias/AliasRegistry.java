@@ -21,7 +21,8 @@ public class AliasRegistry {
     private static final File file = new File("config/commandaliases.txt");
 
     public static int runAlias(CommandContext<CommandSource> context) {
-        String command = context.getInput().substring(1);
+        String input = context.getInput();
+        String command = input.substring(input.indexOf(context.getNodes().get(0).getNode().getName()));
         String commandToRun = aliases.get(command);
         if (commandToRun == null) return 0;
         context.getSource().getServer().getCommandManager().handleCommand(context.getSource(), commandToRun);
