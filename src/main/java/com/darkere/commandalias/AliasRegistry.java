@@ -5,8 +5,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
+import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +19,11 @@ public class AliasRegistry {
     private static final Map<String, String> aliases = new HashMap<>();
     private static final File file = new File("config/commandaliases.txt");
 
-    public static int runAlias(CommandContext<CommandSource> context) {
+    public static int runAlias(CommandContext<CommandSourceStack> context) {
         String input = context.getInput();
         String command = input.substring(input.indexOf(context.getNodes().get(0).getNode().getName()));
         String commandToRun = getCommandWithArguments(command);
-        context.getSource().getServer().getCommandManager().handleCommand(context.getSource(), commandToRun);
+        context.getSource().getServer().getCommands().performCommand(context.getSource(), commandToRun);
         return 1;
     }
 
@@ -46,11 +47,11 @@ public class AliasRegistry {
         return com == null ? "" : com + args;
     }
 
-    public static void registerAliases(CommandDispatcher<CommandSource> dispatcher) {
+    public static void registerAliases(CommandDispatcher<CommandSourceStack> dispatcher) {
         readAliases();
         for (String x : aliases.keySet()) {
             List<String> nodes = StringUtils.split(x, ' ');
-            List<LiteralArgumentBuilder<CommandSource>> literals = new ArrayList<>();
+            List<LiteralArgumentBuilder<CommandSourceStack>> literals = new ArrayList<>();
             for (int i = 0; i < nodes.size(); i++) {
                 if (i == 0) {
                     literals.add(LiteralArgumentBuilder.literal(nodes.get(i)));
@@ -59,7 +60,7 @@ public class AliasRegistry {
                 }
             }
 
-            LiteralArgumentBuilder<CommandSource> literal = null;
+            LiteralArgumentBuilder<CommandSourceStack> literal = null;
             if (literals.size() == 1) {
                 literal = literals.get(0).executes(AliasRegistry::runAlias).then(Commands.argument("args", StringArgumentType.greedyString()).executes(AliasRegistry::runAlias));
             } else {
@@ -69,6 +70,7 @@ public class AliasRegistry {
                     }
                     literal = literals.get(i - 1).then(literals.get(i));
                 }
+                Minecraft.getInstance().options
             }
             dispatcher.register(literal);
         }
