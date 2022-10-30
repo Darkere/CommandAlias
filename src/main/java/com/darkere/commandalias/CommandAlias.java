@@ -6,8 +6,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
-import org.apache.commons.lang3.tuple.Pair;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(CommandAlias.MODID)

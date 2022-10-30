@@ -23,7 +23,7 @@ public class AliasRegistry {
         String input = context.getInput();
         String command = input.substring(input.indexOf(context.getNodes().get(0).getNode().getName()));
         String commandToRun = getCommandWithArguments(command);
-        context.getSource().getServer().getCommands().performCommand(context.getSource(), commandToRun);
+        context.getSource().getServer().getCommands().performPrefixedCommand(context.getSource(), commandToRun);
         return 1;
     }
 
@@ -70,7 +70,6 @@ public class AliasRegistry {
                     }
                     literal = literals.get(i - 1).then(literals.get(i));
                 }
-                Minecraft.getInstance().options
             }
             dispatcher.register(literal);
         }

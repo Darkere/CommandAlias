@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 public class AliasCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> register() {
@@ -19,9 +19,9 @@ public class AliasCommand {
 
     private static int newAlias(CommandContext<CommandSourceStack> ctx, String alias, String cmd) {
         AliasRegistry.addAliases(alias, cmd);
-        ctx.getSource().sendSuccess(new TextComponent("New command alias"), false);
-        ctx.getSource().sendSuccess(new TextComponent("\"/" + alias + "\"" + " now runs " + "\"/" + cmd + "\""), false);
-        ctx.getSource().sendSuccess(new TextComponent("Use /reload to make the command work"), false);
+        ctx.getSource().sendSuccess(Component.literal("New command alias"), false);
+        ctx.getSource().sendSuccess(Component.literal("\"/" + alias + "\"" + " now runs " + "\"/" + cmd + "\""), false);
+        ctx.getSource().sendSuccess(Component.literal("Use /reload to make the command work"), false);
         return 1;
     }
 }
