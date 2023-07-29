@@ -30,6 +30,8 @@ public class AliasRegistry {
     private static String getCommandWithArguments(String command) {
         List<String> nodes = StringUtils.split(command, ' ');
         String test = "";
+
+        //Iterate until the command matches alias, this allows for postfixing
         for (Iterator<String> iterator = nodes.iterator(); iterator.hasNext(); ) {
             test = test + " " + iterator.next();
             test = test.trim();
@@ -39,12 +41,27 @@ public class AliasRegistry {
             }
         }
 
+        // replace %note% with next node
         String com = aliases.get(test);
+        while (com.contains("%")) {
+            int start = com.indexOf("%");
+            int end = com.indexOf("%", start + 1);
+            String begin = com.substring(0, start);
+            String ending = com.substring(end + 1);
+            if (!nodes.isEmpty()) {
+                com = begin + nodes.get(0) + ending;
+                nodes.remove(0);
+            } else {
+                break;
+            }
+        }
+
+        //append remaining nodes
         StringBuilder args = new StringBuilder();
         for (String node : nodes) {
             args.append(" ").append(node);
         }
-        return com == null ? "" : com + args;
+        return com + args;
     }
 
     public static void registerAliases(CommandDispatcher<CommandSourceStack> dispatcher) {

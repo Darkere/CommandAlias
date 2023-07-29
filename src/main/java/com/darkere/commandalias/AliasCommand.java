@@ -19,9 +19,9 @@ public class AliasCommand {
 
     private static int newAlias(CommandContext<CommandSourceStack> ctx, String alias, String cmd) {
         AliasRegistry.addAliases(alias, cmd);
-        ctx.getSource().sendSuccess(Component.literal("New command alias"), false);
-        ctx.getSource().sendSuccess(Component.literal("\"/" + alias + "\"" + " now runs " + "\"/" + cmd + "\""), false);
-        ctx.getSource().sendSuccess(Component.literal("Use /reload to make the command work"), false);
+        ctx.getSource().sendSuccess(()->Component.literal("New command alias"), false);
+        ctx.getSource().sendSuccess(()->Component.literal("\"/" + alias + "\"" + " now runs " + "\"/" + cmd + "\""), false);
+        ctx.getSource().sendSuccess(()->Component.literal("Use /reload to make the command work"), false);
         return 1;
     }
 }
